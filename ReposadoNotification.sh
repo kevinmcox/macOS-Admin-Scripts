@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version 1.0
+# Version 1.1
 # For information on this script visit:
 # https://www.kevinmcox.com/2019/04/automating-reposado-with-slack-notifications
 
@@ -17,6 +17,15 @@ BRANCH="testing"
 SLACK_NOTIFY=true
 SLACK_WEBHOOK_URL="https://hooks.slack.com/services/<COMPLETE URL HERE>"
 SLACK_ICON_URL="https://raw.githubusercontent.com/wdas/reposado/master/other/reposado.jpg"
+
+# Make sure the Storage volume is mounted before continuing
+if
+	[ ! -f /Volumes/Storage/reposado/html/index.html ]
+	then
+	echo "Storage volume does not appear to be mounted, exiting."
+	curl -X POST -H 'Content-type: application/json' --data '{"username":"Reposado","icon_url":"'"$SLACK_ICON_URL"'","text":"*WARNING:* The Storage volume is not mounted."}' $SLACK_WEBHOOK_URL
+	exit 1
+fi
 
 # Run repo_sync to fetch latest updates from Apple
 $REPO_SYNC
