@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Gather Logs
-## Version 1.0, June 3, 2023
+## Version 1.1, June 16, 2023
 ## By Kevin M. Cox
 
 ## This script gathers macOS and application logs then creates a tarball so users can attach the results to IT tickets for evaluation.
@@ -36,10 +36,17 @@ currentUser="$(/usr/sbin/scutil <<< "show State:/Users/ConsoleUser" | /usr/bin/a
 /bin/mkdir "$outputFolder"/User-Library-Logs/
 /bin/cp -pr /Users/"$currentUser"/Library/Logs/ "$outputFolder"/User-Library-Logs/
 
+# CrowdStrike Falcon stats
+falconctl="/Applications/Falcon.app/Contents/Resources/falconctl"
+if	[ -x $falconctl ]; then
+	/bin/mkdir "$outputFolder"/CrowdStrike-Falcon/
+	$falconctl stats > "$outputFolder"/CrowdStrike-Falcon/stats.log
+fi
+
 # AWS VPN logs
 if	[ -d /Users/"$currentUser"/.config/AWSVPNClient/logs/ ]; then
-	/bin/mkdir "$outputFolder"/AWS-VPN-logs/
-	/bin/cp -pr /Users/"$currentUser"/.config/AWSVPNClient/logs/ "$outputFolder"/AWS-VPN-logs/
+	/bin/mkdir "$outputFolder"/AWS-VPN/
+	/bin/cp -pr /Users/"$currentUser"/.config/AWSVPNClient/logs/ "$outputFolder"/AWS-VPN/
 fi
 
 # Create a compressed tar archive of the files
